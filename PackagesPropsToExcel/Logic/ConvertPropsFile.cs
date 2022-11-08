@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Data;
+using System.IO;
+using System.Xml;
+using System.Xml.Linq;
+using System.Xml.Serialization;
 
 namespace Logic
 {
@@ -7,6 +11,8 @@ namespace Logic
     {
         public void GenerateExcel(string packagesPropsPath, string destinationExcelPath)
         {
+            var exportToExcel = ExportToExcel(packagesPropsPath);
+
             Microsoft.Office.Interop.Excel.Range cellRange;
 
             var excel = new Microsoft.Office.Interop.Excel.Application();
@@ -24,8 +30,6 @@ namespace Logic
 
 
             int rowcount = 2;
-
-            var exportToExcel = ExportToExcel();
 
             foreach (DataRow datarow in exportToExcel.Rows)
             {
@@ -67,7 +71,7 @@ namespace Logic
             excel.Quit();
         }
 
-        private System.Data.DataTable ExportToExcel()
+        private System.Data.DataTable ExportToExcel(string packagesPropsPath)
         {
             System.Data.DataTable table = new System.Data.DataTable();
 
@@ -75,6 +79,39 @@ namespace Logic
             table.Columns.Add("Nuget Name", typeof(string));
             table.Columns.Add("Version", typeof(string));
             table.Columns.Add("License", typeof(string));
+
+            //XmlRootAttribute xRoot = new XmlRootAttribute();
+            //xRoot.ElementName = "ItemGroup";
+            //xRoot.IsNullable = true;
+
+            System.Xml.Serialization.XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(Project)/*, xRoot*/);
+            System.IO.StreamReader file = new System.IO.StreamReader(packagesPropsPath);
+            Project packagesProps = (Project)reader.Deserialize(file);
+            file.Close();
+            //var packagesProps = File.OpenRead(packagesPropsPath);
+            //var xml = XDocument.Load(packagesPropsPath);
+            //XElement booksFromFile = XElement.Load(packagesPropsPath);
+            //using (XmlReader reader = XmlReader.Create(packagesPropsPath))
+            //{
+            //    while (reader.Read())
+            //    {
+            //        if (reader.IsStartElement())
+            //        {
+            //            //return only when you have START tag  
+            //            switch (reader.Name.ToString())
+            //            {
+            //                case "Name":
+            //                    Console.WriteLine("Name of the Element is : " + reader.ReadString());
+            //                    break;
+            //                case "Location":
+            //                    Console.WriteLine("Your Location is : " + reader.ReadString());
+            //                    break;
+            //            }
+            //        }
+            //        Console.WriteLine("");
+            //    }
+            //}
+
 
             table.Rows.Add(1, "KLA.FA.SecsSerializer", "1.2.3", "MIT");
             table.Rows.Add(2, "DependencyInjection", "1.2.3", "MIT");
