@@ -1,6 +1,8 @@
-﻿using System;
+﻿using NuGet;
+using System;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -49,14 +51,20 @@ namespace Logic
                     rowcount += 1;
                     for (int i = 1; i <= exportToExcel.Columns.Count; i++)
                     {
-
                         if (rowcount == 3)
                         {
                             newWorksheet.Cells[2, i] = exportToExcel.Columns[i - 1].ColumnName;
                             newWorksheet.Cells.Font.Color = System.Drawing.Color.Black;
                         }
 
-                        newWorksheet.Cells[rowcount, i] = datarow[i - 1].ToString();
+                        if (exportToExcel.Columns[i - 1].ColumnName.Equals("License URL"))
+                            newWorksheet.Hyperlinks.Add(newWorksheet.Cells[rowcount, i],
+                                datarow[i - 1].ToString(),
+                                Type.Missing,
+                                datarow[i - 1].ToString(),
+                                datarow[i - 1].ToString());
+                        else
+                            newWorksheet.Cells[rowcount, i] = datarow[i - 1].ToString();
 
                         if (rowcount > 3)
                         {
@@ -64,7 +72,8 @@ namespace Logic
                             {
                                 if (rowcount % 2 == 0)
                                 {
-                                    cellRange = newWorksheet.Range[newWorksheet.Cells[rowcount, 1], newWorksheet.Cells[rowcount, exportToExcel.Columns.Count]];
+                                    cellRange = newWorksheet.Range[newWorksheet.Cells[rowcount, 1],
+                                        newWorksheet.Cells[rowcount, exportToExcel.Columns.Count]];
                                 }
                             }
                         }
@@ -104,7 +113,7 @@ namespace Logic
             table.Columns.Add("ID", typeof(int));
             table.Columns.Add("Nuget Name", typeof(string));
             table.Columns.Add("Version", typeof(string));
-            table.Columns.Add("License", typeof(string));
+            table.Columns.Add("License URL", typeof(string));
 
             Project packagesProps = null;
             var reader = new XmlSerializer(typeof(Project));
@@ -113,10 +122,15 @@ namespace Logic
                 packagesProps = (Project)reader.Deserialize(file);
             }
 
+            IPackageRepository repo = PackageRepositoryFactory.Default.CreateRepository("https://packages.nuget.org/api/v2");
             var cnt = 1;
             foreach (var packageReference in packagesProps.ItemGroup.PackageReferences)
             {
-                table.Rows.Add(cnt++, packageReference.Update, packageReference.Version, "MIT");
+                var package = (from p in repo.FindPackagesById(packageReference.Update)
+                               where p.Version == new SemanticVersion(packageReference.Version)
+                               select p).FirstOrDefault();
+
+                table.Rows.Add(cnt++, packageReference.Update, packageReference.Version, package?.LicenseUrl);
             }
 
             return table;
