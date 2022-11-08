@@ -19,7 +19,7 @@ namespace PackagesPropsToExcel
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            _convertPropsFile.GenerateExcel(@"C:\Temp\pp.txt", @"C:\Temp\PackagesProps1.xls");
+            _convertPropsFile.GenerateExcel(@"C:\Temp\pp.txt", @"C:\Temp\PackagesProps2.xls");
         }
     }
 }

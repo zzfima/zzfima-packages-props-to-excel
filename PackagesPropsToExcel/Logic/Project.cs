@@ -19,10 +19,24 @@ namespace Logic
         public List<PackageReference> PackageReferences { get; set; }
     }
 
-     [Serializable]
+    [Serializable]
     public class PackageReference
     {
+        private string _version;
+
+        [XmlAttribute("Update")]
         public string Update { get; set; }
-        public string Version { get; set; }
+        [XmlAttribute("Version")]
+        public string Version
+        {
+            get
+            {
+                return _version;
+            }
+            set
+            {
+                _version = value.Trim(new char[] { '[', ']' });
+            }
+        }
     }
 }

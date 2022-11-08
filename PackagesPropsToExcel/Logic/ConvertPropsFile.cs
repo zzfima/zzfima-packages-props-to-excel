@@ -80,45 +80,18 @@ namespace Logic
             table.Columns.Add("Version", typeof(string));
             table.Columns.Add("License", typeof(string));
 
-            //XmlRootAttribute xRoot = new XmlRootAttribute();
-            //xRoot.ElementName = "ItemGroup";
-            //xRoot.IsNullable = true;
-
+            Project packagesProps = null;
             System.Xml.Serialization.XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(Project)/*, xRoot*/);
-            System.IO.StreamReader file = new System.IO.StreamReader(packagesPropsPath);
-            Project packagesProps = (Project)reader.Deserialize(file);
-            file.Close();
-            //var packagesProps = File.OpenRead(packagesPropsPath);
-            //var xml = XDocument.Load(packagesPropsPath);
-            //XElement booksFromFile = XElement.Load(packagesPropsPath);
-            //using (XmlReader reader = XmlReader.Create(packagesPropsPath))
-            //{
-            //    while (reader.Read())
-            //    {
-            //        if (reader.IsStartElement())
-            //        {
-            //            //return only when you have START tag  
-            //            switch (reader.Name.ToString())
-            //            {
-            //                case "Name":
-            //                    Console.WriteLine("Name of the Element is : " + reader.ReadString());
-            //                    break;
-            //                case "Location":
-            //                    Console.WriteLine("Your Location is : " + reader.ReadString());
-            //                    break;
-            //            }
-            //        }
-            //        Console.WriteLine("");
-            //    }
-            //}
+            using (System.IO.StreamReader file = new System.IO.StreamReader(packagesPropsPath))
+            {
+                packagesProps = (Project)reader.Deserialize(file);
+            }
 
-
-            table.Rows.Add(1, "KLA.FA.SecsSerializer", "1.2.3", "MIT");
-            table.Rows.Add(2, "DependencyInjection", "1.2.3", "MIT");
-            table.Rows.Add(3, "Microsoft.CodeAnalysis.NetAnalyzers", "1.2.3", "MIT");
-            table.Rows.Add(4, "KLA.Infrastructure.KLogger", "1.2.3", "MIT");
-            table.Rows.Add(5, "AutoFixture", "1.2.3", "MIT");
-            table.Rows.Add(6, "AutoFixture.AutoMoq", "1.2.3", "MIT");
+            var cnt = 1;
+            foreach (var packageReference in packagesProps.ItemGroup.PackageReferences)
+            {
+                table.Rows.Add(cnt++, packageReference.Update, packageReference.Version, "MIT");
+            }
 
             return table;
         }
