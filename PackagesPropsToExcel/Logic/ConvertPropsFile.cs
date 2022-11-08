@@ -13,62 +13,68 @@ namespace Logic
         {
             var exportToExcel = ExportToExcel(packagesPropsPath);
 
-            Microsoft.Office.Interop.Excel.Range cellRange;
-
-            var excel = new Microsoft.Office.Interop.Excel.Application();
-            excel.Visible = false;
-            excel.DisplayAlerts = false;
-            var workBook = excel.Workbooks.Open(destinationExcelPath);
-            var newWorksheet = workBook.Worksheets.Add();
-
-            newWorksheet = (Microsoft.Office.Interop.Excel.Worksheet)workBook.ActiveSheet;
-            newWorksheet.Name = "Nugets List " + DateTime.Now.Millisecond;
-
-            newWorksheet.Range[newWorksheet.Cells[1, 1], newWorksheet.Cells[1, 8]].Merge();
-            newWorksheet.Cells[1, 1] = "Nuget Packages List";
-            newWorksheet.Cells.Font.Size = 15;
-
-
-            int rowcount = 2;
-
-            foreach (DataRow datarow in exportToExcel.Rows)
+            Microsoft.Office.Interop.Excel.Application excel = null;
+            Microsoft.Office.Interop.Excel.Workbook workBook = null;
+            try
             {
-                rowcount += 1;
-                for (int i = 1; i <= exportToExcel.Columns.Count; i++)
+                excel = new Microsoft.Office.Interop.Excel.Application();
+                excel.Visible = false;
+                excel.DisplayAlerts = false;
+                workBook = excel.Workbooks.Open(destinationExcelPath);
+
+                var newWorksheet = workBook.Worksheets.Add();
+                Microsoft.Office.Interop.Excel.Range cellRange;
+                newWorksheet = (Microsoft.Office.Interop.Excel.Worksheet)workBook.ActiveSheet;
+                newWorksheet.Name = "Nugets List " + DateTime.Now.Millisecond;
+
+                newWorksheet.Range[newWorksheet.Cells[1, 1], newWorksheet.Cells[1, 8]].Merge();
+                newWorksheet.Cells[1, 1] = "Nuget Packages List";
+                newWorksheet.Cells.Font.Size = 15;
+
+
+                int rowcount = 2;
+
+                foreach (DataRow datarow in exportToExcel.Rows)
                 {
-
-                    if (rowcount == 3)
+                    rowcount += 1;
+                    for (int i = 1; i <= exportToExcel.Columns.Count; i++)
                     {
-                        newWorksheet.Cells[2, i] = exportToExcel.Columns[i - 1].ColumnName;
-                        newWorksheet.Cells.Font.Color = System.Drawing.Color.Black;
-                    }
 
-                    newWorksheet.Cells[rowcount, i] = datarow[i - 1].ToString();
-
-                    if (rowcount > 3)
-                    {
-                        if (i == exportToExcel.Columns.Count)
+                        if (rowcount == 3)
                         {
-                            if (rowcount % 2 == 0)
+                            newWorksheet.Cells[2, i] = exportToExcel.Columns[i - 1].ColumnName;
+                            newWorksheet.Cells.Font.Color = System.Drawing.Color.Black;
+                        }
+
+                        newWorksheet.Cells[rowcount, i] = datarow[i - 1].ToString();
+
+                        if (rowcount > 3)
+                        {
+                            if (i == exportToExcel.Columns.Count)
                             {
-                                cellRange = newWorksheet.Range[newWorksheet.Cells[rowcount, 1], newWorksheet.Cells[rowcount, exportToExcel.Columns.Count]];
+                                if (rowcount % 2 == 0)
+                                {
+                                    cellRange = newWorksheet.Range[newWorksheet.Cells[rowcount, 1], newWorksheet.Cells[rowcount, exportToExcel.Columns.Count]];
+                                }
                             }
                         }
                     }
                 }
+
+                cellRange = newWorksheet.Range[newWorksheet.Cells[1, 1], newWorksheet.Cells[rowcount, exportToExcel.Columns.Count]];
+                cellRange.EntireColumn.AutoFit();
+                Microsoft.Office.Interop.Excel.Borders border = cellRange.Borders;
+                border.LineStyle = Microsoft.Office.Interop.Excel.XlLineStyle.xlContinuous;
+                border.Weight = 2d;
+
+                cellRange = newWorksheet.Range[newWorksheet.Cells[1, 1], newWorksheet.Cells[2, exportToExcel.Columns.Count]];
             }
-
-            cellRange = newWorksheet.Range[newWorksheet.Cells[1, 1], newWorksheet.Cells[rowcount, exportToExcel.Columns.Count]];
-            cellRange.EntireColumn.AutoFit();
-            Microsoft.Office.Interop.Excel.Borders border = cellRange.Borders;
-            border.LineStyle = Microsoft.Office.Interop.Excel.XlLineStyle.xlContinuous;
-            border.Weight = 2d;
-
-            cellRange = newWorksheet.Range[newWorksheet.Cells[1, 1], newWorksheet.Cells[2, exportToExcel.Columns.Count]];
-
-            workBook.Save();
-            workBook.Close();
-            excel.Quit();
+            finally
+            {
+                workBook?.Save();
+                workBook?.Close();
+                excel?.Quit();
+            }
         }
 
         private System.Data.DataTable ExportToExcel(string packagesPropsPath)
