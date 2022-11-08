@@ -12,7 +12,7 @@ namespace Logic
         public void GenerateExcel(string packagesPropsPath, string destinationExcelPath)
         {
             var exportToExcel = ExportToExcel(packagesPropsPath);
-
+            var isFileMissing = false;
             Microsoft.Office.Interop.Excel.Application excel = null;
             Microsoft.Office.Interop.Excel.Workbook workBook = null;
             try
@@ -20,7 +20,17 @@ namespace Logic
                 excel = new Microsoft.Office.Interop.Excel.Application();
                 excel.Visible = false;
                 excel.DisplayAlerts = false;
-                workBook = excel.Workbooks.Open(destinationExcelPath);
+
+                if (File.Exists(destinationExcelPath))
+                {
+                    workBook = excel.Workbooks.Open(destinationExcelPath);
+                    isFileMissing = false;
+                }
+                else
+                {
+                    workBook = excel.Workbooks.Add(Type.Missing);
+                    isFileMissing = true;
+                }
 
                 var newWorksheet = workBook.Worksheets.Add();
                 Microsoft.Office.Interop.Excel.Range cellRange;
@@ -71,9 +81,19 @@ namespace Logic
             }
             finally
             {
-                workBook?.Save();
+                if (isFileMissing)
+                    workBook?.SaveAs(destinationExcelPath);
+                else
+                    workBook?.Save();
+
                 workBook?.Close();
                 excel?.Quit();
+
+                workBook = null;
+                excel = null;
+
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
         }
 
