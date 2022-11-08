@@ -1,26 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Logic
 {
     public class ConvertPropsFile
     {
-        Microsoft.Office.Interop.Excel.Application excel;
-        Microsoft.Office.Interop.Excel.Workbook workBook;
-        Microsoft.Office.Interop.Excel.Worksheet newWorksheet;
-        Microsoft.Office.Interop.Excel.Range celLrangE;
-
         public void GenerateExcel(string packagesPropsPath, string destinationExcelPath)
         {
-            excel = new Microsoft.Office.Interop.Excel.Application();
+            Microsoft.Office.Interop.Excel.Range cellRange;
+
+            var excel = new Microsoft.Office.Interop.Excel.Application();
             excel.Visible = false;
             excel.DisplayAlerts = false;
-            workBook = excel.Workbooks.Open(destinationExcelPath);
-            newWorksheet = workBook.Worksheets.Add();
+            var workBook = excel.Workbooks.Open(destinationExcelPath);
+            var newWorksheet = workBook.Worksheets.Add();
 
             newWorksheet = (Microsoft.Office.Interop.Excel.Worksheet)workBook.ActiveSheet;
             newWorksheet.Name = "Nugets List " + DateTime.Now.Millisecond;
@@ -44,7 +37,6 @@ namespace Logic
                     {
                         newWorksheet.Cells[2, i] = exportToExcel.Columns[i - 1].ColumnName;
                         newWorksheet.Cells.Font.Color = System.Drawing.Color.Black;
-
                     }
 
                     newWorksheet.Cells[rowcount, i] = datarow[i - 1].ToString();
@@ -55,23 +47,20 @@ namespace Logic
                         {
                             if (rowcount % 2 == 0)
                             {
-                                celLrangE = newWorksheet.Range[newWorksheet.Cells[rowcount, 1], newWorksheet.Cells[rowcount, exportToExcel.Columns.Count]];
+                                cellRange = newWorksheet.Range[newWorksheet.Cells[rowcount, 1], newWorksheet.Cells[rowcount, exportToExcel.Columns.Count]];
                             }
-
                         }
                     }
-
                 }
-
             }
 
-            celLrangE = newWorksheet.Range[newWorksheet.Cells[1, 1], newWorksheet.Cells[rowcount, exportToExcel.Columns.Count]];
-            celLrangE.EntireColumn.AutoFit();
-            Microsoft.Office.Interop.Excel.Borders border = celLrangE.Borders;
+            cellRange = newWorksheet.Range[newWorksheet.Cells[1, 1], newWorksheet.Cells[rowcount, exportToExcel.Columns.Count]];
+            cellRange.EntireColumn.AutoFit();
+            Microsoft.Office.Interop.Excel.Borders border = cellRange.Borders;
             border.LineStyle = Microsoft.Office.Interop.Excel.XlLineStyle.xlContinuous;
             border.Weight = 2d;
 
-            celLrangE = newWorksheet.Range[newWorksheet.Cells[1, 1], newWorksheet.Cells[2, exportToExcel.Columns.Count]];
+            cellRange = newWorksheet.Range[newWorksheet.Cells[1, 1], newWorksheet.Cells[2, exportToExcel.Columns.Count]];
 
             workBook.Save();
             workBook.Close();
