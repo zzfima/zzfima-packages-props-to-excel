@@ -23,7 +23,7 @@ namespace Logic
             newWorksheet = workBook.Worksheets.Add();
 
             newWorksheet = (Microsoft.Office.Interop.Excel.Worksheet)workBook.ActiveSheet;
-            newWorksheet.Name = "StudentRepoertCard" + DateTime.Now.Millisecond;
+            newWorksheet.Name = "Nugets List " + DateTime.Now.Millisecond;
 
             newWorksheet.Range[newWorksheet.Cells[1, 1], newWorksheet.Cells[1, 8]].Merge();
             newWorksheet.Cells[1, 1] = "Nuget Packages List";
