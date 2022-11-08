@@ -87,8 +87,8 @@ namespace Logic
             table.Columns.Add("License", typeof(string));
 
             Project packagesProps = null;
-            System.Xml.Serialization.XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(Project)/*, xRoot*/);
-            using (System.IO.StreamReader file = new System.IO.StreamReader(packagesPropsPath))
+            var reader = new XmlSerializer(typeof(Project));
+            using (var file = new StreamReader(packagesPropsPath))
             {
                 packagesProps = (Project)reader.Deserialize(file);
             }
