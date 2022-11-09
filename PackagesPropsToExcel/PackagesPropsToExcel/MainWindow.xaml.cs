@@ -1,5 +1,6 @@
 ﻿using Logic;
 using Microsoft.Win32;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace PackagesPropsToExcel
@@ -21,16 +22,25 @@ namespace PackagesPropsToExcel
             UpdateStatusLabel();
         }
 
-        private void OnGenerateExcel(object sender, RoutedEventArgs e)
+        private async void OnGenerateExcel(object sender, RoutedEventArgs e)
         {
             try
             {
                 waitClock.Spin = true;
                 waitClock.Visibility = Visibility.Visible;
-                _convertPropsFile.GenerateExcel(_packagesPropsPath, _destinationExcelPath);
+
+                btnSelelectExcel.IsEnabled = false;
+                btnSelelectNugets.IsEnabled = false;
+                btnRun.IsEnabled = false;
+
+                await _convertPropsFile.GenerateExcel(_packagesPropsPath, _destinationExcelPath);
             }
             finally
             {
+                btnSelelectExcel.IsEnabled = true;
+                btnSelelectNugets.IsEnabled = true;
+                btnRun.IsEnabled = true;
+
                 waitClock.Spin = false;
                 waitClock.Visibility = Visibility.Hidden;
             }
