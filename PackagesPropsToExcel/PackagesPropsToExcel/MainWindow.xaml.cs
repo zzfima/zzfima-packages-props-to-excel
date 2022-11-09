@@ -73,6 +73,8 @@ namespace PackagesPropsToExcel
         {
             statusLabel1.Content = "DestinationExcelPath: " + _destinationExcelPath;
             statusLabel2.Content = "Packages.Props Path: " + _packagesPropsPath;
+
+            btnRun.IsEnabled = !string.IsNullOrEmpty(_destinationExcelPath) && !string.IsNullOrEmpty(_packagesPropsPath);
         }
     }
 }

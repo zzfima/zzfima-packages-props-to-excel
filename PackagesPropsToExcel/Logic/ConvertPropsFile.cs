@@ -18,35 +18,38 @@ namespace Logic
 
             try
             {
-                excel = new Microsoft.Office.Interop.Excel.Application();
-                excel.Visible = false;
-                excel.DisplayAlerts = false;
-
-                if (packagesPropsPath == null || packagesPropsPath.Equals(string.Empty))
+                await Task.Run(() =>
                 {
-                    throw new NullReferenceException("Packages.Props File can not be null or empty");
-                }
+                    excel = new Microsoft.Office.Interop.Excel.Application();
+                    excel.Visible = false;
+                    excel.DisplayAlerts = false;
 
-                if (!File.Exists(packagesPropsPath))
-                {
-                    throw new FileNotFoundException("File " + packagesPropsPath + " not found");
-                }
-
-                if (File.Exists(destinationExcelPath))
-                {
-                    if (IsFileLocked(new FileInfo(destinationExcelPath)))
+                    if (packagesPropsPath == null || packagesPropsPath.Equals(string.Empty))
                     {
-                        throw new AccessViolationException("File " + destinationExcelPath + " is opened, can not be modified");
+                        throw new NullReferenceException("Packages.Props File can not be null or empty");
                     }
 
-                    workBook = excel.Workbooks.Open(destinationExcelPath);
-                    isFileMissing = false;
-                }
-                else
-                {
-                    workBook = excel.Workbooks.Add(Type.Missing);
-                    isFileMissing = true;
-                }
+                    if (!File.Exists(packagesPropsPath))
+                    {
+                        throw new FileNotFoundException("File " + packagesPropsPath + " not found");
+                    }
+
+                    if (File.Exists(destinationExcelPath))
+                    {
+                        if (IsFileLocked(new FileInfo(destinationExcelPath)))
+                        {
+                            throw new AccessViolationException("File " + destinationExcelPath + " is opened, can not be modified");
+                        }
+
+                        workBook = excel.Workbooks.Open(destinationExcelPath);
+                        isFileMissing = false;
+                    }
+                    else
+                    {
+                        workBook = excel.Workbooks.Add(Type.Missing);
+                        isFileMissing = true;
+                    }
+                });
 
                 var exportToExcel = await RetrieveNugetsData(
                     packagesPropsPath,

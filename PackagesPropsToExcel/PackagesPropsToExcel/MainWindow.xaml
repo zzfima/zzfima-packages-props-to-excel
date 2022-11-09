@@ -24,6 +24,6 @@
         <Button x:Name="btnRun" Content="Generate Excel" Margin="5"  Grid.Row="2" Grid.Column="0" Click="OnGenerateExcel"/>
         <Label x:Name="statusLabel1" Background="AliceBlue" Margin="5 5 5 0" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" HorizontalContentAlignment="Left"/>
         <Label x:Name="statusLabel2" Background="AliceBlue" Margin="5 2 5 5" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" HorizontalContentAlignment="Left"/>
-        <fa:ImageAwesome x:Name="waitClock"  Icon="Connectdevelop" Foreground="DeepSkyBlue" Grid.Column="1" Grid.Row="0" Grid.RowSpan="3"/>
+        <fa:ImageAwesome x:Name="waitClock" Margin="10" Icon="FileText" Foreground="DeepSkyBlue" Grid.Column="1" Grid.Row="0" Grid.RowSpan="3"/>
     </Grid>
 </Window>
