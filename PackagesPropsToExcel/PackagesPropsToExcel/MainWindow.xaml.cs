@@ -15,17 +15,28 @@ namespace PackagesPropsToExcel
         public MainWindow()
         {
             InitializeComponent();
-
+            waitClock.Spin = false;
+            waitClock.Visibility = Visibility.Hidden;
             _convertPropsFile = new ConvertPropsFile();
             UpdateStatusLabel();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void OnGenerateExcel(object sender, RoutedEventArgs e)
         {
-            _convertPropsFile.GenerateExcel(_packagesPropsPath, _destinationExcelPath);
+            try
+            {
+                waitClock.Spin = true;
+                waitClock.Visibility = Visibility.Visible;
+                _convertPropsFile.GenerateExcel(_packagesPropsPath, _destinationExcelPath);
+            }
+            finally
+            {
+                waitClock.Spin = false;
+                waitClock.Visibility = Visibility.Hidden;
+            }
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private void OnSelectExcel(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
@@ -34,7 +45,7 @@ namespace PackagesPropsToExcel
             UpdateStatusLabel();
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void OnSelectPackagesProps(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
