@@ -33,11 +33,11 @@ namespace Logic
                     workBook = excel.Workbooks.Add(Type.Missing);
                     isFileMissing = true;
                 }
-
+                
                 var newWorksheet = workBook.Worksheets.Add();
                 Microsoft.Office.Interop.Excel.Range cellRange;
                 newWorksheet = (Microsoft.Office.Interop.Excel.Worksheet)workBook.ActiveSheet;
-                newWorksheet.Name = "Nugets List " + DateTime.Now.Millisecond;
+                newWorksheet.Name = "Nugets List " + workBook.Sheets.Count;
 
                 newWorksheet.Range[newWorksheet.Cells[1, 1], newWorksheet.Cells[1, 8]].Merge();
                 newWorksheet.Cells[1, 1] = "Nuget Packages List";
