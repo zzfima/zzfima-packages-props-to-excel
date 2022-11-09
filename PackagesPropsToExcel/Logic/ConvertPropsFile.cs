@@ -64,7 +64,6 @@ namespace Logic
                     newWorksheet.Cells[1, 1] = "Nuget Packages List";
                     newWorksheet.Cells.Font.Size = 15;
 
-
                     int rowcount = 2;
 
                     foreach (DataRow datarow in exportToExcel.Rows)
@@ -189,14 +188,14 @@ namespace Logic
             return table;
         }
 
-        private static IPackage GetIPackage(IPackageRepository mainRepo, PackageReference packageReference)
+        private IPackage GetIPackage(IPackageRepository mainRepo, PackageReference packageReference)
         {
             return (from p in mainRepo.FindPackagesById(packageReference.Update)
                     where p.Version == new SemanticVersion(packageReference.Version)
                     select p).FirstOrDefault();
         }
 
-        private static Project GetPackagesPropsProject(string packagesPropsPath)
+        private Project GetPackagesPropsProject(string packagesPropsPath)
         {
             Project packagesProps;
             var reader = new XmlSerializer(typeof(Project));
