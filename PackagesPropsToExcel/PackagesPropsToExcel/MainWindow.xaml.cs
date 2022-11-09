@@ -33,7 +33,12 @@ namespace PackagesPropsToExcel
                 btnSelelectNugets.IsEnabled = false;
                 btnRun.IsEnabled = false;
 
-                await _convertPropsFile.GenerateExcel(_packagesPropsPath, _destinationExcelPath);
+                await _convertPropsFile.GenerateExcel(_packagesPropsPath, _destinationExcelPath)
+                    .ContinueWith((t) =>
+                    {
+                        if (t.IsFaulted)
+                            MessageBox.Show(t.Exception.InnerException.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    });
             }
             finally
             {
